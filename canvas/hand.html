@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+
+        }
+        canvas{
+            display: block;
+            margin: 0 auto;
+            background: skyblue;
+        }
+
+    </style>
+</head>
+<body>
+
+<canvas id="canvas" ></canvas>
+<script>
+    var canvas=document.getElementById('canvas');
+
+    document.body.style.background='url('+canvas.toDataURL()+')';
+
+    var ps=canvas.getContext('2d');
+
+    var width=document.documentElement.clientWidth;
+
+    var height=document.documentElement.clientHeight;
+
+    canvas.width=width;
+
+    canvas.height=height;
+
+    function play(title){
+
+//        初始化xy轴
+
+        this.r=this.random(20);
+
+        this.x=this.random(width-this.r);
+        this.y=this.random(height-this.r);
+
+        this.color=this.color();
+
+        this.speedX=this.random(6);
+
+        this.speedY=this.random(4);
+
+        this.title = title || 'Canvas';
+
+    }
+
+    play.prototype={
+
+        random:function(num){
+            return  parseInt(Math.random()*num)+1;
+        },
+        color:function(){
+
+            return 'rgb('+this.random(255)+','+this.random(255)+','+this.random(255)+')'
+        },
+        move:function(){
+
+            this.x+=this.speedX;
+            this.y+=this.speedY;
+
+            if(this.x<this.r){
+                this.speedX=Math.abs(this.speedX);
+                this.x=this.r
+            }
+            if(this.x>width-this.r){
+                this.speedX=-this.speedX;
+                this.x=width-this.r;
+            }
+            if(this.y<this.r){
+                this.speedY=Math.abs(this.speedY);
+                this.y=this.r;
+            }
+            if(this.y>height-this.r){
+                this.speedY=-this.speedY;
+                this.y=height-this.r;
+            }
+            this.yuan();
+        },
+        yuan:function(){
+
+            ps.beginPath();
+
+            ps.arc(this.x,this.y,this.r,0,2*Math.PI);
+
+            ps.fillStyle=this.color;
+
+            ps.fill();
+
+            this.filltext();
+        },
+        filltext:function(){
+
+            ps.font='16px 微软雅黑';
+
+            ps.fillText(this.title,this.x+this.r+2,this.y+this.r/3);
+
+        }
+
+    };
+
+
+    play.children=[];
+
+    play.runing=0;
+
+
+//    实例化对象
+    play.obj=function(string){
+
+       var str=string.split(/\s/);
+
+        for(var i=0;i<str.length;i++){
+
+            var ge=new play(str[i]);
+
+            this.children.push(ge);
+
+        }
+
+    };
+
+    play.run=function(){
+
+        if(this.runing) return;
+
+        this.runing=1;
+
+        var children=this.children;
+
+        setInterval(function(){
+
+            ps.clearRect(0,0,width,height);
+
+            for(var i=0;i<children.length;i++){
+
+                children[i].move();
+
+                for(var j=0;j<children.length;j++){
+
+                    if(j!=i){
+
+                        var left=children[i].x-children[j].x;
+                        var right=children[i].y-children[j].y;
+
+                        right=Math.abs(right);
+
+
+                        if(left<0 && left>=-100 && right<=100){
+
+                            ps.beginPath();
+
+                            ps.moveTo(children[i].x,children[i].y);
+
+                            ps.lineTo(children[j].x,children[j].y);
+
+                            ps.strokeStyle=children[i].color;
+
+                            ps.stroke();
+
+                        }
+
+                    }
+                }
+
+
+            }
+
+        },20)
+
+    };
+
+    play.run();
+
+    play.obj('java html php css3 html3 mysql ajax jsonp java html php css3 html3 mysql ajax jsonp java html php css3 html3 mysql ajax jsonp java html php css3 html3 mysql ajax jsonp');
+
+</script>
+</body>
+</html>

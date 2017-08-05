@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        *{
+           background:url("images/timg.jpg") no-repeat  fixed 0;;
+            background-size: cover;
+        }
+        canvas{
+            display: block;
+            margin: 30px auto 0;
+            border: 1px solid #a7a991;
+            background: #c1bda5;
+            opacity: 0.6;
+            border-radius: 50%;
+        }
+        .box{
+            width: 500px;
+            height: 25px;
+            margin: 0 auto;
+            vertical-align: top;
+        }
+        .box input{
+            height: 25px;
+            border: 1px solid #a7a991;
+        }
+        .text{
+            font-size: 14px;
+            color:#6f533d;
+            font-family: '微软雅黑';
+            width: 100%;
+            border-bottom: 1px solid #a7a991;
+            padding-bottom: 10px;
+            background: #c1bda5;
+            text-indent: 5px;
+        }
+        .text input{
+            width: 390px;
+            background:#c1bda5 ;
+            border: none;
+            outline: none;
+            font-size: 18px;
+            color: #6f533d;
+            font-family: '微软雅黑';
+        }
+        button{
+            width: 100%;
+            height: 40px;
+            color: white;
+            font-size: 16px;
+            font-family: '微软雅黑';
+            margin-top: 5px;
+            outline: none;
+            border: 1px solid #cdc2b0;
+            border-radius: 35px;
+            background:#c1bda5 ;
+        }
+        button:hover{
+            color: black;
+            background: #e2e7d3;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<canvas></canvas>
+<br/>
+<div class="box">
+   <div class="text"> 输入显示文字：<input type="text"/></div>
+   <div class="text"> 输入组成形状：<input type="text"/></div>
+    <button>生成文字</button></div>
+
+
+<script src="js/tween.js"></script>
+<script>
+
+    var canvas=document.querySelector('canvas');
+
+    var ps=canvas.getContext('2d');
+
+    var width=500;
+
+    var height=400;
+
+    canvas.width=width;
+
+    canvas.height=height;
+
+    var obj={
+
+        random:function(num){
+
+          return parseInt(Math.random()*num);
+
+        },
+
+        running:0,
+
+        ponter:[],
+
+        filltext:function(text){
+
+            ps.clearRect(0,0,width,height);
+
+            this.ponter=[];
+
+            ps.beginPath();
+
+            ps.font=' 100px  微软雅黑';
+
+            ps.textAlign='center';
+
+            ps.fillText(text||'默认内容',width/2,height/2);
+
+            return this;
+
+        },
+
+        getdata:function(){
+
+            var num=5;
+
+            var data=ps.getImageData(0,0,width,height).data;
+
+            for(var y=1;y<=height;y+=num){
+
+                for(var x=1;x<width;x+=num){
+
+//                    获取具体位置
+                    var r=data[((y-1)*width+x)*4-4];
+                    var g=data[((y-1)*width+x)*4-3];
+                    var b=data[((y-1)*width+x)*4-2];
+                    var a=data[((y-1)*width+x)*4-1];
+                    var tx=this.random(width);
+
+                    var ty=this.random(height);
+
+                    if(a){
+                        this.ponter.push([x,y,tx,ty]);   //四个值，变化的值和最终达到的位置
+                    }
+
+                }
+
+            }
+
+            return this;
+        },
+//        根据先获取的坐标填充
+
+        color:['#a77cf3','#6080ff'],
+
+        fill:function(txt,x,y){
+
+            ps.font='10px 微软雅黑';
+
+            ps.beginPath();
+
+            ps.fillStyle=this.color[this.random(3)];
+
+
+            ps.fillText(txt ||'+',x,y);
+
+        },
+
+//        开启定时器功能
+
+        play:function(txt){
+
+            var self=this;
+
+            var delay=30;
+
+            var star=0;
+
+            var end=500;
+
+            var ponter=this.ponter;
+
+            if(this.running) return;
+
+            this.running=setInterval(function(){
+
+                star+=delay;
+
+                if(star>=end){
+
+                    clearInterval(self.running);
+
+                    star=end;
+
+                    self.running=0;
+
+                    self.points=[];
+
+                }
+
+                ps.clearRect(0,0,width,height);
+
+                for(var i=0;i<ponter.length;i++){
+
+                    var x=ponter[i][0];
+                    var y=ponter[i][1];
+                    var tx=ponter[i][2];
+                    var ty=ponter[i][3];
+
+                    x=Tween.Back.easeInOut(star,tx,x-tx,end);
+                    y=Tween.Back.easeInOut(star,ty,y-ty,end);
+
+                    self.fill(txt,x,y);
+
+                }
+
+            },delay)
+
+        },
+
+        init:function(text1,text2){
+
+//            this.ponter=[];
+
+            obj.filltext(text1).getdata().play(text2);
+        }
+
+    };
+
+    obj.init();
+
+
+    document.querySelector('button').onclick=function(){
+
+        var tex=document.querySelectorAll('input');
+
+        var input1=tex[0].value;
+        var input2=tex[1].value;
+        console.log(input1);
+        console.log(input2);
+
+        obj.init(input1,input2);
+
+    }
+
+</script>
+
+</body>
+
+
+</html>

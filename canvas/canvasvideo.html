@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{
+            background: #e3d7db;
+        }
+        .box{
+            width: 900px;
+            height: 600px;
+            margin: 100px auto;
+        }
+        video{
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <canvas width="320" height="176"></canvas>
+    <video src="images/1.mp4" controls></video>
+</div>
+
+
+<script>
+
+    var canvas=document.querySelector('canvas');
+    var ps=canvas.getContext('2d');
+
+    var video=document.querySelector('video');
+
+    video.oncanplay=function(){
+
+        var width=video.clientWidth;
+        console.log(width);
+
+        var height=video.clientHeight;
+        console.log(height);
+
+        setInterval(function(){
+            ps.drawImage(video,0,0,width,height);
+        },30)
+
+
+
+    }
+
+</script>
+
+</body>
+</html>

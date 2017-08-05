@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+
+        *{
+            margin: 0;
+            padding: 0;
+
+        }
+        canvas{
+
+            background: palegoldenrod;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+<canvas ></canvas>
+
+<script>
+    var  cancas=document.querySelector('canvas');
+
+    var ps=cancas.getContext('2d');
+
+    var width=document.documentElement.clientWidth;
+
+    var height=document.documentElement.clientHeight;
+
+    cancas.width=width;
+    cancas.height=height;
+
+    function ball(x,y){
+
+//        初始半径
+
+        this.r=20;
+
+//        初始变化速度
+
+        this.speedX=this.random(8);
+
+        this.speedY=this.random(7);
+
+        this.speedR=Math.abs(this.random(2));
+
+//        颜色变化
+
+        this.red=Math.abs(this.random(255));
+        this.green=Math.abs(this.random(255));
+        this.blue=Math.abs(this.random(255));
+//        初始透明度；
+        this.opacity=1;
+
+//        颜色变化速度
+
+        this.speedA=Math.random()*0.5/2;
+
+//        初始的xy轴的位置
+
+        this.x=x || width/2;
+
+        this.y=y || height/2;
+
+    }
+
+    ball.prototype={
+
+        random:function(num){
+
+//            有±值
+            num=parseInt(Math.random()*num)+1;
+
+            return  parseInt(Math.random()*2)?num:-num;
+
+        },
+        speed:function(){
+
+            if(this.r<=0)return;
+
+            this.x+=this.speedX;
+
+            this.y+=this.speedY;
+
+            this.r-=this.speedR;
+
+            this.opacity-=this.speedA;
+
+            this.randen();
+
+        },
+        randen:function(){
+
+            ps.beginPath();
+
+            ps.fillStyle='rgba('+this.red+','+this.green+','+this.blue+','+this.opacity+')';
+
+            ps.arc(this.x,this.y,this.r,0,2*Math.PI);
+
+            ps.fill();
+        }
+
+
+    };
+
+
+
+//    创建一个对象
+
+    var stage={
+
+        sudu:30,
+
+        sid:0,
+
+        children:[],
+
+        addChild:function(child){
+
+
+            this.children.push(child);
+
+        },
+//        初始化方法决定生成的数量
+
+        init:function(num,x,y){
+
+
+            for(var i=0;i<num;i++){
+
+                this.addChild(new ball(x,y))
+            }
+
+        },
+        play:function(){
+
+            if(this.sid) return;
+
+//            this.sid=1;
+            var children=this.children;
+
+            this.sid=setInterval(function(){
+
+                ps.clearRect(0,0,width,height);
+
+                for(var i=0;i<children.length;i++){
+
+                    children[i].speed();
+
+
+                   if(children[i].r<=0){
+
+                       children.shift(i,1);
+                   }
+
+
+                }
+
+            },this.sudu)
+
+
+        }
+
+    };
+
+
+
+    cancas.onmousemove=function(e){
+
+        var x= e.clientX-cancas.offsetLeft;
+
+        var y= e.clientY-cancas.offsetTop;
+
+        stage.init(4,x,y);
+        stage.play();
+
+        console.log(stage.children.length);
+
+
+
+
+    };
+
+
+</script>
+
+</body>
+</html>

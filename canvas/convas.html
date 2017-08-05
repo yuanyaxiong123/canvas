@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{
+            background: #55546e;
+        }
+        canvas{
+            /*border: 1px solid darkcyan;*/
+            display: block;
+            margin: 50px auto;
+        }
+
+
+    </style>
+</head>
+<body>
+<canvas width="500" height="500"></canvas>
+
+<script>
+
+    var a=document.querySelector('a');
+
+    var canvas=document.querySelector('canvas');
+
+    var ps=canvas.getContext('2d');
+
+    var width=canvas.offsetWidth;
+
+    var height=canvas.offsetHeight;
+
+
+
+    function xu(){
+        function call(){
+
+            this.r=this.random(20);
+
+            this.x=0;
+
+            this.y=0;
+
+            this.color=this.rancor();
+
+            this.speedX=this.random(4);
+
+            this.speedY=this.random(6);
+
+
+        }
+
+        call.prototype={
+
+            random:function(num){
+
+                return parseInt(Math.random()*num);
+
+            },
+            rancor:function(){
+
+                return 'rgb('+this.random(255)+','+this.random(255)+','+this.random(255)+')'
+
+            },
+            up:function(){
+
+                this.x+=this.speedX;
+
+                this.y+=this.speedY;
+
+                if(this.x<this.r){
+
+                    this.speedX=Math.abs(this.speedX);
+                    this.x=this.r;
+                }
+                if(this.y<this.r){
+                    this.y=this.r;
+
+                    this.speedY=Math.abs(this.speedY);
+                }
+
+                if(this.y>height-this.r){
+                    this.y=height-this.r
+                    this.speedY=-this.speedY;
+                }
+                if(this.x>width-this.r){
+
+                    this.x=width-this.r;
+                    this.speedX=-this.speedX
+                }
+
+                this.yuan();
+
+            },
+            yuan:function(){
+
+                ps.beginPath();
+
+                ps.arc(this.x,this.y,this.r,0,2*Math.PI);
+
+                ps.fillStyle=this.color;
+
+                ps.fill();
+
+            }
+
+        };
+
+
+        //        把创建多个对象放在函数的属中
+
+        call.hai=[];
+
+        call.init=function(num){
+
+            for(var i=0;i<num;i++){
+
+                this.hai.push(new call());
+
+            }
+
+        };
+
+
+        var on=0;
+
+        call.play=function(){
+
+            if(this.on)return;
+            this.on=1;
+
+            var hai=this.hai;
+
+            setInterval(function(){
+                ps.clearRect(0,0,width,height);
+
+                ps.beginPath();
+
+                for(var i=0;i<hai.length;i++){
+
+                    hai[i].up();
+
+                }
+
+            },20)
+
+
+
+        };
+
+
+        call.init(400);
+        call.play();
+
+    }
+
+    xu();
+
+
+
+
+</script>
+
+
+
+</body>
+</html>
